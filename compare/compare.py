@@ -1,5 +1,3 @@
-import os
-import glob
 from multiprocessing import cpu_count
 from multiprocessing.pool import ThreadPool
 
@@ -11,7 +9,6 @@ FLANN_INDEX_KDTREE = 0
 
 
 def match_two(descr1, descr2):
-
     index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
     search_params = dict(checks=50)  # or pass empty dictionary
 
@@ -45,29 +42,30 @@ def match_list(sift, gray_img, gray_images):
     return best_match_id
 
 
-def process(fn):
+def process(line):
     sift = cv2.xfeatures2d.SIFT_create()
 
-    p = fn.replace('.jpg', '') + '*.png'
-    piece_files = glob.glob(p)
-    img = cv2.imread(fn.replace('/o/', '/o/plate-'))
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    images = [cv2.imread(f) for f in piece_files]
+    line = line.strip().split(',')
+    plate_fn = line[1]
+    pieces_files = line[2:]
+
+    plate_img = cv2.imread(plate_fn)
+    plate_gray = cv2.cvtColor(plate_img, cv2.COLOR_BGR2GRAY)
+    images = [cv2.imread(f) for f in pieces_files]
     gray_images = [cv2.cvtColor(imf, cv2.COLOR_BGR2GRAY) for imf in images]
 
-    best_match_id = match_list(sift, gray, gray_images)
+    best_match_id = match_list(sift, plate_gray, gray_images)
 
     print(best_match_id)
     if best_match_id >= 0:
-        print(fn + ' ' + piece_files[best_match_id])
+        print(plate_fn + ',' + pieces_files[best_match_id])
 
 
-with open('dataset/dataset.txt') as f:
-    filenames = [s.strip() for s in f]
+with open('dataset/plates.csv') as f:
+    filenames = f.readlines()
 
 pool = ThreadPool(cpu_count())
 pool.map(process, filenames)
-
 
 # def cut(line):
 #     plate_path = 'platesmania/images/' + line[2].replace('http://', '')
