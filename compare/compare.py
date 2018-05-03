@@ -61,8 +61,7 @@ def process(line):
         print(plate_fn + ',' + pieces_files[best_match_id])
 
 
-with open('dataset/plates.csv') as f:
-    filenames = f.readlines()
+filenames = open('plates.csv').readlines()
 
 pool = ThreadPool(cpu_count())
 pool.map(process, filenames)
