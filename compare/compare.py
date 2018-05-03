@@ -49,8 +49,12 @@ def process(line):
     plate_fn = line[1]
     pieces_files = line[2:]
 
-    plate_img = cv2.imread(plate_fn)
-    plate_gray = cv2.cvtColor(plate_img, cv2.COLOR_BGR2GRAY)
+    try:
+        plate_img = cv2.imread(plate_fn)
+        plate_gray = cv2.cvtColor(plate_img, cv2.COLOR_BGR2GRAY)
+    except:
+        print('cv2 except: ' + plate_fn)
+
     images = [cv2.imread(f) for f in pieces_files]
     gray_images = [cv2.cvtColor(imf, cv2.COLOR_BGR2GRAY) for imf in images]
 
