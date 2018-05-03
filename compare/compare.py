@@ -56,7 +56,7 @@ def process(line):
 
     best_match_id = match_list(sift, plate_gray, gray_images)
 
-    print(best_match_id)
+    # print(best_match_id)
     if best_match_id >= 0:
         print(plate_fn + ',' + pieces_files[best_match_id])
 
